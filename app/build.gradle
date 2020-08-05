@@ -5,13 +5,13 @@ apply plugin: 'kotlin-kapt'
 
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
     buildToolsVersion "29.0.3"
 
     defaultConfig {
         applicationId "com.example.facerecognitionmlkit"
         minSdkVersion 23
-        targetSdkVersion 29
+        targetSdkVersion 30
         versionCode 1
         versionName "1.0"
 
@@ -40,25 +40,18 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
 //    implementation 'androidx.core:core-ktx:1.1.0-alpha05'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.1.1'
-    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'com.google.android.material:material:1.1.0'
 
     // ViewModel dependencies
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     kapt 'androidx.lifecycle:lifecycle-compiler:2.0.0'
 
-    // Google Vision dependencies
-    implementation 'com.google.android.gms:play-services-vision:17.0.2'
-
-    // ML Kit dependencies
-    implementation 'com.google.firebase:firebase-ml-vision:19.0.3'
-    implementation 'com.google.firebase:firebase-ml-vision-face-model:17.0.2'
-
-    // Cloud AutoML SDK
-    implementation 'com.google.cloud:google-cloud-automl:0.55.1-beta'
-    implementation 'io.grpc:grpc-okhttp:1.13.1' // specific version needed for cloud-automl
+    // Object detection feature with bundled default classifier
+    implementation 'com.google.mlkit:object-detection:16.1.0'
+    implementation 'com.google.android.gms:play-services-mlkit-face-detection:16.1.0'
 
     // Retrofit
     implementation 'com.google.code.gson:gson:2.8.5'

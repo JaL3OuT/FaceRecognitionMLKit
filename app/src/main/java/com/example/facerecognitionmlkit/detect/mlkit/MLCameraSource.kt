@@ -29,12 +29,11 @@ import androidx.annotation.RequiresPermission
 import com.example.facerecognitionmlkit.detect.common.GraphicOverlay
 import com.example.facerecognitionmlkit.detect.common.ICameraSource
 import com.google.android.gms.common.images.Size
-
 import java.io.IOException
 import java.lang.Thread.State
 import java.nio.ByteBuffer
-import java.util.ArrayList
-import java.util.IdentityHashMap
+import java.util.*
+import kotlin.math.abs
 
 /**
  * Manages the camera and allows UI updates on top of it (e.g. overlaying extra Graphics or
@@ -660,8 +659,9 @@ class MLCameraSource(private var activity: Activity, private val graphicOverlay:
             val previewFpsRangeList = camera.parameters.supportedPreviewFpsRange
             for (range in previewFpsRangeList) {
                 val deltaMin = desiredPreviewFpsScaled - range[Camera.Parameters.PREVIEW_FPS_MIN_INDEX]
-                val deltaMax = desiredPreviewFpsScaled - range[Camera.Parameters.PREVIEW_FPS_MAX_INDEX]
-                val diff = Math.abs(deltaMin) + Math.abs(deltaMax)
+                val deltaMax =
+                    desiredPreviewFpsScaled - range[Camera.Parameters.PREVIEW_FPS_MAX_INDEX]
+                val diff = abs(deltaMin) + abs(deltaMax)
                 if (diff < minDiff) {
                     selectedFpsRange = range
                     minDiff = diff

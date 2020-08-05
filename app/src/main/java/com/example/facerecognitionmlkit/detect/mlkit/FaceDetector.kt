@@ -2,11 +2,11 @@ package com.example.facerecognitionmlkit.detect.mlkit
 
 import android.util.Log
 import androidx.annotation.GuardedBy
-import com.google.firebase.ml.vision.FirebaseVision
-import com.google.firebase.ml.vision.common.FirebaseVisionImage
-import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
-import com.google.firebase.ml.vision.face.FirebaseVisionFace
-import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetectorOptions
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.face.Face
+import com.google.mlkit.vision.face.FaceDetection
+import com.google.mlkit.vision.face.FaceDetector
+import com.google.mlkit.vision.face.FaceDetectorOptions
 import java.io.IOException
 
 import java.nio.ByteBuffer
@@ -21,7 +21,7 @@ import java.nio.ByteBuffer
 class FaceDetector(private val callback: DetectorCallback?) : IFrameDetector {
 
     interface DetectorCallback {
-        fun onSuccess(frameData: ByteBuffer, results: List<FirebaseVisionFace>, frameMetadata: FrameMetadata)
+        fun onSuccess(frameData: ByteBuffer, results: List<Face>, frameMetadata: FrameMetadata)
         fun onFailure(exception: Exception)
     }
 
@@ -29,13 +29,13 @@ class FaceDetector(private val callback: DetectorCallback?) : IFrameDetector {
         private const val TAG = "FaceDetector"
     }
 
-    private val delegateDetector = FirebaseVision.getInstance()
-        .getVisionFaceDetector(
-            FirebaseVisionFaceDetectorOptions.Builder()
-                .enableTracking()
-                .setLandmarkMode(FirebaseVisionFaceDetectorOptions.ALL_LANDMARKS)
-                .build()
-        )
+    private lateinit var detector: FaceDetector
+    private val delegateDetector =
+        FaceDetectorOptions.Builder()
+            .enableTracking()
+            .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_ALL)
+            .build()
+
 
     // To keep the latest images and its metadata.
     @GuardedBy("this")
@@ -72,16 +72,20 @@ class FaceDetector(private val callback: DetectorCallback?) : IFrameDetector {
     }
 
     private fun processImage(data: ByteBuffer, frameMetadata: FrameMetadata) {
-        val metadata = FirebaseVisionImageMetadata.Builder()
-            .setFormat(FirebaseVisionImageMetadata.IMAGE_FORMAT_NV21)
-            .setWidth(frameMetadata.width)
-            .setHeight(frameMetadata.height)
-            .setRotation(frameMetadata.rotation)
-            .build()
 
-        val image = FirebaseVisionImage.fromByteBuffer(data, metadata)
+        val image = InputImage.fromByteBuffer(
+            data,
+            frameMetadata.width,
+            frameMetadata.height,
+            270,
+            InputImage.IMAGE_FORMAT_NV21
+        )
 
-        delegateDetector.detectInImage(image)
+
+
+        detector = FaceDetection.getClient(delegateDetector)
+
+        detector.process(image)
             .addOnSuccessListener { results ->
                 callback?.onSuccess(data, results, frameMetadata)
                 processLatestImage()
@@ -93,7 +97,7 @@ class FaceDetector(private val callback: DetectorCallback?) : IFrameDetector {
 
     override fun stop() {
         try {
-            delegateDetector.close()
+            detector.close()
         } catch (e: IOException) {
             Log.e(TAG, "Exception thrown while trying to close Face Detector: $e")
         }
