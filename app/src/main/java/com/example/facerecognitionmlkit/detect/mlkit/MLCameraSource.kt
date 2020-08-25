@@ -46,7 +46,7 @@ class MLCameraSource(private var activity: Activity, private val graphicOverlay:
 
     private var camera: Camera? = null
 
-    private var cameraFacing = GraphicOverlay.CAMERA_FACING_FRONT
+    private var cameraFacing = GraphicOverlay.CAMERA_FACING_BACK
     private var previewSize: Size? = null
 
     /**

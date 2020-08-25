@@ -1,11 +1,10 @@
 package com.example.facerecognitionmlkit
 
 import android.util.Log
-import com.example.facerecognitionmlkit.detect.mlkit.FaceDetector
-import com.example.facerecognitionmlkit.detect.mlkit.FaceGraphic
-import com.example.facerecognitionmlkit.detect.mlkit.FrameMetadata
-import com.example.facerecognitionmlkit.detect.mlkit.MLCameraSource
+import com.example.facerecognitionmlkit.detect.mlkit.*
+import com.google.mlkit.vision.barcode.Barcode
 import com.google.mlkit.vision.face.Face
+import kotlinx.android.synthetic.main.activity_main.*
 import java.io.IOException
 import java.nio.ByteBuffer
 
@@ -22,7 +21,7 @@ class MLKitActivity : AbstractActivity() {
      */
     override fun createCameraSource() {
         mCameraSource = MLCameraSource(this, mGraphicOverlay)
-        mCameraSource?.apply {
+      /*  mCameraSource?.apply {
             setFrameDetector(
                 FaceDetector(object : FaceDetector.DetectorCallback {
                     override fun onSuccess(
@@ -63,6 +62,35 @@ class MLKitActivity : AbstractActivity() {
 
                 })
             )
+        }*/
+
+        mCameraSource?.apply {
+            setFrameDetector( CodeDetector( object : CodeDetector.DetectorCallback{
+                override fun onSuccess(
+                    frameData: ByteBuffer,
+                    results: List<Barcode>,
+                    frameMetadata: FrameMetadata
+                ) {
+                    if (results.isEmpty())
+                    {
+                        Log.e(TAG ,"pas de code a bar " )
+                    }
+                    else
+                    {
+                        results.forEach {  barcode: Barcode ->
+                            Log.e("CODE" , barcode.displayValue.toString())
+                            textView.text = barcode.displayValue.toString()
+                        }
+                    }
+
+                }
+
+                override fun onFailure(exception: Exception) {
+                    exception.printStackTrace()
+                }
+
+            }
+            ))
         }
     }
 

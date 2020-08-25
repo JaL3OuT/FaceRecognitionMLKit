@@ -6,7 +6,7 @@ apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 30
-    buildToolsVersion "29.0.3"
+    buildToolsVersion "30.0.1"
 
     defaultConfig {
         applicationId "com.example.facerecognitionmlkit"
@@ -50,8 +50,11 @@ dependencies {
     kapt 'androidx.lifecycle:lifecycle-compiler:2.0.0'
 
     // Object detection feature with bundled default classifier
-    implementation 'com.google.mlkit:object-detection:16.1.0'
+    implementation 'com.google.mlkit:object-detection:16.2.0'
     implementation 'com.google.android.gms:play-services-mlkit-face-detection:16.1.0'
+    implementation 'com.google.mlkit:barcode-scanning:16.0.2'
+    implementation 'com.google.android.gms:play-services-mlkit-barcode-scanning:16.1.1'
+
 
     // Retrofit
     implementation 'com.google.code.gson:gson:2.8.5'
